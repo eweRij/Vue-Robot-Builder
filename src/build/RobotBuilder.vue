@@ -1,0 +1,220 @@
+<template>
+  <div>
+    <div class="top-row">
+      <div class="top part">
+      <div class="robot-name">{{selectedRobot.head.title}}
+      <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span></div>
+        <img v-bind:src="selectedRobot.head.src" title="head"/>
+        <button v-on:click="selectPrevHead()" class="prev-selector">&#9668;</button>
+        <button v-on:click="selectNextHead()" class="next-selector">&#9658;</button>
+      </div>
+    </div>
+    <div class="middle-row">
+      <div class="left part">
+        <img v-bind:src="selectedRobot.leftArm.src" title="left arm"/>
+        <button v-on:click="selectPrevLeftArm()" class="prev-selector">&#9650;</button>
+        <button v-on:click="selectNextLeftArm()" class="next-selector">&#9660;</button>
+      </div>
+      <div class="center part">
+        <img v-bind:src="selectedRobot.torso.src" title="left arm"/>
+        <button v-on:click="selectPrevTorso()" class="prev-selector">&#9668;</button>
+        <button v-on:click="selectNextTorso()" class="next-selector">&#9658;</button>
+      </div>
+      <div class="right part">
+        <img v-bind:src="selectedRobot.rightArm.src" title="left arm"/>
+        <button v-on:click="selectPrevRightArm()" class="prev-selector">&#9650;</button>
+        <button v-on:click="selectNextRightArm()" class="next-selector">&#9660;</button>
+      </div>
+    </div>
+    <div class="bottom-row">
+      <div class="bottom part">
+        <img v-bind:src="selectedRobot.base.src" title="left arm"/>
+        <button v-on:click="selectPrevBase()" class="prev-selector">&#9668;</button>
+        <button v-on:click="selectNextBase()" class="next-selector">&#9658;</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import availableParts from '../data/parts';
+
+const getNextValidIndex = (index, length) => {
+  const validIndex = index + 1;
+  return validIndex > length - 1 ? 0 : validIndex;
+};
+
+const getPreviousValidIndex = (index, length) => {
+  const validIndex = index - 1;
+  return validIndex < 0 ? length - 1 : validIndex;
+};
+
+export default { // nstead v-on:--> @; v-bind:-->://
+// v-once-->cos renderuje sie tylko raz--
+// performance!!useEffect([])??v-if vs v-show -->
+// v-show display:none>its better when its expensive to render again
+  name: 'RobotBuilder',
+  data() { // this is how we insert data into component
+    return {
+      availableParts,
+      selectHeadIndex: 0,
+      selectLeftArmIndex: 0,
+      selectTorsoIndex: 0,
+      selectRightArmIndex: 0,
+      selectBaseIndex: 0,
+    };
+  },
+  computed: { // to avoid to much logic in the components its better to put it here1!!
+    selectedRobot() { // zwraca obiekt
+      return {
+        head: availableParts.heads[this.selectHeadIndex],
+        leftArm: availableParts.arms[this.selectLeftArmIndex],
+        torso: availableParts.torsos[this.selectTorsoIndex],
+        rightArm: availableParts.arms[this.selectRightArmIndex],
+        base: availableParts.bases[this.selectBaseIndex],
+      };
+    },
+  },
+  methods: { // how to insert all foos into component,for events
+    selectNextHead() {
+      this.selectHeadIndex = getNextValidIndex(this.selectHeadIndex, availableParts.heads.length);
+      console.log(this.selectHeadIndex);
+    },
+    selectPrevHead() {
+      this.selectHeadIndex =
+       getPreviousValidIndex(this.selectHeadIndex, availableParts.heads.length);
+      console.log(this.selectHeadIndex);
+    },
+    selectNextLeftArm() {
+      this.selectLeftArmIndex =
+       getNextValidIndex(this.selectLeftArmIndex, availableParts.arms.length);
+    },
+    selectPrevLeftArm() {
+      this.selectLeftArmIndex =
+       getPreviousValidIndex(this.selectLeftArmIndex, availableParts.arms.length);
+    },
+    selectNextRightArm() {
+      this.selectRightArmIndex =
+      getNextValidIndex(this.selectRightArmIndex, availableParts.arms.length);
+    },
+    selectPrevRightArm() {
+      this.selectRightArmIndex =
+       getPreviousValidIndex(this.selectRightArmIndex, availableParts.arms.length);
+    },
+    selectNextTorso() {
+      this.selectTorsoIndex =
+      getNextValidIndex(this.selectTorsoIndex, availableParts.torsos.length);
+    },
+    selectPrevTorso() {
+      this.selectTorsoIndex =
+       getPreviousValidIndex(this.selectTorsoIndex, availableParts.torsos.length);
+    },
+    selectNextBase() {
+      this.selectBaseIndex =
+      getNextValidIndex(this.selectBaseIndex, availableParts.bases.length);
+    },
+    selectPrevBase() {
+      this.selectBaseIndex =
+      getPreviousValidIndex(this.selectBaseIndex, availableParts.bases.length);
+    },
+  },
+};
+</script>
+<style>
+.part {
+  position: relative;
+  width:165px;
+  height:165px;
+  border: 3px solid #aaa;
+}
+.part img {
+  width:165px;
+}
+.top-row {
+  display:flex;
+  justify-content: space-around;
+}
+.middle-row {
+  display:flex;
+  justify-content: center;
+}
+.bottom-row {
+  display:flex;
+  justify-content: space-around;
+  border-top: none;
+}
+.head {
+  border-bottom: none;
+}
+.left {
+  border-right: none;
+}
+.right {
+  border-left: none;
+}
+.left img {
+  transform: rotate(-90deg);
+}
+.right img {
+  transform: rotate(90deg);
+}
+.bottom {
+  border-top: none;
+}
+.prev-selector {
+  position: absolute;
+  z-index:1;
+  top: -3px;
+  left: -28px;
+  width: 25px;
+  height: 171px;
+}
+.next-selector {
+  position: absolute;
+  z-index:1;
+  top: -3px;
+  right: -28px;
+  width: 25px;
+  height: 171px;
+}
+.center .prev-selector, .center .next-selector {
+  opacity:0.8;
+}
+.left .prev-selector {
+  top: -28px;
+  left: -3px;
+  width: 144px;
+  height: 25px;
+}
+.left .next-selector {
+  top: auto;
+  bottom: -28px;
+  left: -3px;
+  width: 144px;
+  height: 25px;
+}
+.right .prev-selector {
+  top: -28px;
+  left: 24px;
+  width: 144px;
+  height: 25px;
+}
+.right .next-selector {
+  top: auto;
+  bottom: -28px;
+  left: 24px;
+  width: 144px;
+  height: 25px;
+}
+.right .next-selector {
+  right: -3px;
+}
+.robot-name{
+  position: absolute;
+  top: -25px;
+  width:100%;
+  text-align:center;
+}
+.sale {
+  color: red;
+}
+</style>
