@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="content">
+  <button  @click="addToCart()"  class="add-to-cart">Add to cart</button>
     <div class="top-row">
-      <div class="top part">
-      <div class="robot-name">{{selectedRobot.head.title}}
+      <!-- <div class="top part" :style="headOnSaleStyle"> -->
+       <div :class="[headOnSaleClass,'top', 'part']"><!-- jesli chcemy kilka klas to v-bind:class="[]"||:class="[]"-->
+      <div class="robot-name">{{selectedRobot.head.title}}<!--zmiennie w komponencie zamiast textu to {{}} a jak atrybut to w ""-->
       <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span></div>
         <img v-bind:src="selectedRobot.head.src" title="head"/>
         <button v-on:click="selectPrevHead()" class="prev-selector">&#9668;</button>
@@ -33,10 +35,25 @@
         <button v-on:click="selectNextBase()" class="next-selector">&#9658;</button>
       </div>
     </div>
+    <table>
+    <thead><tr>
+    <th>Robot</th>
+    <th>Cost</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="(robot,index) in cart" :key="index">
+    <!--jak map w reacie , nie laczyc z condiotionalem!!-->
+    <td>{{robot.selectedRobot}} : </td>
+    <td>{{robot.cost}}</td>
+    </tr>
+    </tbody>
+    </table>
   </div>
 </template>
 <script>
-import availableParts from '../data/parts';
+import availableParts from '../data/parts';// importy!!
+import createHookMixin from './create_hook.mixin';
 
 const getNextValidIndex = (index, length) => {
   const validIndex = index + 1;
@@ -48,14 +65,16 @@ const getPreviousValidIndex = (index, length) => {
   return validIndex < 0 ? length - 1 : validIndex;
 };
 
-export default { // nstead v-on:--> @; v-bind:-->://
+export default { // istead v-on:--> @; v-bind:-->://
 // v-once-->cos renderuje sie tylko raz--
 // performance!!useEffect([])??v-if vs v-show -->
 // v-show display:none>its better when its expensive to render again
   name: 'RobotBuilder',
-  data() { // this is how we insert data into component
+  mixins: [createHookMixin], // w ten spodob mozemy radzic sobie z powtarzalnym kodem
+  data() { // this is how we insert data into component;when put here vue know that data is changing, app is tracking tts changes!
     return {
       availableParts,
+      cart: [],
       selectHeadIndex: 0,
       selectLeftArmIndex: 0,
       selectTorsoIndex: 0,
@@ -63,7 +82,15 @@ export default { // nstead v-on:--> @; v-bind:-->://
       selectBaseIndex: 0,
     };
   },
-  computed: { // to avoid to much logic in the components its better to put it here1!!
+  computed: { // to avoid to much logic in the components its better to put it here1!!tu sie przelicza pewne wartości
+    headOnSaleClass() {
+      return this.selectedRobot.head.onSale ? 'onSale' : '';
+    },
+    headOnSaleStyle() {
+      return {
+        border: this.selectedRobot.head.onSale ? '3px solid red' : '1px solid #fff ',
+      };
+    },
     selectedRobot() { // zwraca obiekt
       return {
         head: availableParts.heads[this.selectHeadIndex],
@@ -75,6 +102,15 @@ export default { // nstead v-on:--> @; v-bind:-->://
     },
   },
   methods: { // how to insert all foos into component,for events
+    addToCart() {
+      const cost = this.selectedRobot.head.cost +
+      this.selectedRobot.leftArm.cost +
+      this.selectedRobot.base.cost +
+       this.selectedRobot.torso.cost + this.selectedRobot.rightArm.cost;
+      console.log(this.cart, this.selectedRobot);
+      this.cart = [...this.cart, { selectedRobot: this.selectedRobot.head.title, cost }];
+      console.log(this.cart);
+    },
     selectNextHead() {
       this.selectHeadIndex = getNextValidIndex(this.selectHeadIndex, availableParts.heads.length);
       console.log(this.selectHeadIndex);
@@ -126,9 +162,12 @@ export default { // nstead v-on:--> @; v-bind:-->://
   height:165px;
   border: 3px solid #aaa;
 }
-.part img {
-  width:165px;
+.part {
+ img {
+  width: 165px;
 }
+}
+
 .top-row {
   display:flex;
   justify-content: space-around;
@@ -216,5 +255,18 @@ export default { // nstead v-on:--> @; v-bind:-->://
 }
 .sale {
   color: red;
+}
+.content{
+  position:relative
+}
+.add-to-cart {
+  position: absolute;
+  right:30px;
+  width: 200px;
+  padding: 5px;
+  font-size: 16px;
+}
+.onSale {
+  border:3px solid red
 }
 </style>

@@ -11,18 +11,21 @@
 </header>
 <main>
   <!-- <HomePage msg="Welcome to Your Vue.js App"/> -->
-  <RobotBuilder/>
+  <!-- <RobotBuilder/> -->
+  <Search/>
   </main>
 </template>
 
 <script>
 // import HomePage from './home/HomePage.vue';
-import RobotBuilder from './build/RobotBuilder.vue';
+// import RobotBuilder from './build/RobotBuilder.vue';
+import Search from './search/Search.vue';
 
 export default {
   name: 'App',
   components: {
-    RobotBuilder,
+    Search,
+    // RobotBuilder,
     // HomePage,
     // local components need to be register like this in section of App metadata,
     // can be used like HTML then;Single-file-component (template,script,style(optional))
